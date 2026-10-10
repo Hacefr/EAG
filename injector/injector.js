@@ -1,9 +1,8 @@
 /**
- * EAG Forge Revamped - Main Injector Logic
+ * EAG Forge Revamped - Main Injector Logic & Mod Hub
  */
 
 document.addEventListener("DOMContentLoaded", () => {
-    // UI Elements
     const dropzone = document.getElementById("dropzone");
     const fileInput = document.getElementById("clientFileInput");
     const clientStatus = document.getElementById("clientStatus");
@@ -15,14 +14,70 @@ document.addEventListener("DOMContentLoaded", () => {
     const progressBar = document.getElementById("progressBar");
     const progressText = document.getElementById("progressText");
 
-    // State
     let clientFile = null;
     let clientHTMLContent = "";
     let detectedVersion = null;
     let availableMods = [];
     let selectedModIds = new Set();
 
-    // 1. File Upload & Drag-and-Drop Handlers
+    // 1. Initial Load: Fetch Manifest Immediately so Raw Downloads Work Even Before Uploading Client
+    loadManifest();
+
+    async function loadManifest() {
+        try {
+            const response = await fetch("mods/manifest.json");
+            if (!response.ok) throw new Error("Manifest not found");
+            availableMods = await response.json();
+            renderModList(false); // Render initial view with raw download buttons enabled
+        } catch (err) {
+            console.warn("[Injector] Could not fetch manifest.json, using built-in defaults:", err);
+            availableMods = [
+                {
+                    id: "eaglerium",
+                    name: "Eaglerium (Lithium Math Port)",
+                    description: "Fast trigonometry lookup tables, vector memory caching, and physics optimization.",
+                    supportedVersions: ["1.8.8", "1.12.2", "1.21.6", "26.2 (WASM)"],
+                    file: "mods/eaglerium/eaglerium.js",
+                    default: true
+                },
+                {
+                    id: "eagopt",
+                    name: "EAGOpt (Frame Pacer & Redundancy Filter)",
+                    description: "Smooths frame pacing and eliminates duplicate WebGL texture flips.",
+                    supportedVersions: ["1.8.8", "1.12.2", "1.21.6", "26.2 (WASM)"],
+                    file: "mods/eagopt/eagopt.js",
+                    default: true
+                },
+                {
+                    id: "eagzoom",
+                    name: "EAGZoom (OptiFine Camera Zoom)",
+                    description: "Hold 'C' in-game for smooth cinematic zoom.",
+                    supportedVersions: ["1.8.8", "1.12.2", "1.21.6", "26.2 (WASM)"],
+                    file: "mods/eagzoom/eagzoom.js",
+                    default: true
+                },
+                {
+                    id: "fullbright",
+                    name: "Fullbright (Night Vision Gamma)",
+                    description: "Press 'B' in-game to toggle full lighting brightness.",
+                    supportedVersions: ["1.8.8", "1.12.2", "1.21.6", "26.2 (WASM)"],
+                    file: "mods/fullbright/fullbright.js",
+                    default: false
+                },
+                {
+                    id: "workservers",
+                    name: "WorkServers (Unblocked Live Hub)",
+                    description: "Pre-fills multiplayer list with verified community servers.",
+                    supportedVersions: ["1.8.8", "1.12.2", "1.21.6", "26.2 (WASM)"],
+                    file: "mods/workservers/workservers.js",
+                    default: true
+                }
+            ];
+            renderModList(false);
+        }
+    }
+
+    // 2. Drag & Drop File Handlers
     dropzone.addEventListener("click", () => fileInput.click());
 
     dropzone.addEventListener("dragover", (e) => {
@@ -48,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // 2. Read and Analyze the Uploaded Client
+    // 3. File Processing & Version Detection
     function handleFileSelect(file) {
         if (!file.name.endsWith(".html") && !file.name.endsWith(".htm")) {
             alert("Please upload a valid .html or .htm Eaglercraft client.");
@@ -64,15 +119,13 @@ document.addEventListener("DOMContentLoaded", () => {
         reader.onload = function(e) {
             clientHTMLContent = e.target.result;
             detectClientVersion(clientHTMLContent);
-            loadManifestAndRenderMods();
+            renderModList(true); // Re-render with version compatibility filtering active
             injectBtn.disabled = false;
         };
         reader.readAsText(file);
     }
 
-    // 3. Version Detection Heuristics
     function detectClientVersion(html) {
-        // Look for signature markers in the HTML content
         const lower = html.toLowerCase();
 
         if (lower.includes("eymenwsmc") || lower.includes("1.21")) {
@@ -84,7 +137,6 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (lower.includes("1.8.8") || lower.includes("teavm") || lower.includes("lax1dude")) {
             detectedVersion = "1.8.8";
         } else {
-            // Default fallback if modern WASM markers are detected
             if (lower.includes(".wasm") || lower.includes("webassembly")) {
                 detectedVersion = "Modern (WASM)";
             } else {
@@ -95,56 +147,24 @@ document.addEventListener("DOMContentLoaded", () => {
         detectedVersionText.textContent = `Architecture Detected: ${detectedVersion}`;
     }
 
-    // 4. Fetch Mod Manifest and Populate Checklist
-    async function loadManifestAndRenderMods() {
-        modListContainer.innerHTML = '<div class="mod-placeholder">Loading available addons...</div>';
-
-        try {
-            const response = await fetch("mods/manifest.json");
-            if (!response.ok) throw new Error("Manifest not found");
-            availableMods = await response.json();
-        } catch (err) {
-            console.warn("[Injector] Could not fetch manifest.json, using built-in defaults:", err);
-            // Default fallback mods if running locally without a web server
-            availableMods = [
-                {
-                    id: "eaglerium",
-                    name: "Eaglerium (Lithium Math Port)",
-                    description: "Optimizes physics, tick rate, and pathfinding math to boost FPS.",
-                    supportedVersions: ["1.8.8", "1.12.2", "1.21.6", "26.2 (WASM)"],
-                    file: "mods/eaglerium/eaglerium.js",
-                    default: true
-                },
-                {
-                    id: "workservers",
-                    name: "WorkServers (Unblocked Live List)",
-                    description: "Pre-fills multiplayer with verified, unblocked community servers.",
-                    supportedVersions: ["1.8.8", "1.12.2", "1.21.6", "26.2 (WASM)"],
-                    file: "mods/workservers/workservers.js",
-                    default: true
-                }
-            ];
-        }
-
-        renderModList();
-    }
-
-    function renderModList() {
+    // 4. Mod Catalog Rendering with Direct Raw Download Buttons
+    function renderModList(hasUploadedClient) {
         modListContainer.innerHTML = "";
         selectedModIds.clear();
 
-        // Filter mods compatible with the detected version
-        const compatibleMods = availableMods.filter(mod => {
-            if (!mod.supportedVersions || mod.supportedVersions.includes("all")) return true;
-            return mod.supportedVersions.some(v => detectedVersion.includes(v));
-        });
+        const modsToDisplay = hasUploadedClient && detectedVersion
+            ? availableMods.filter(mod => {
+                if (!mod.supportedVersions || mod.supportedVersions.includes("all")) return true;
+                return mod.supportedVersions.some(v => detectedVersion.includes(v));
+            })
+            : availableMods;
 
-        if (compatibleMods.length === 0) {
-            modListContainer.innerHTML = '<div class="mod-placeholder">No specific pre-baked mods found for this version. The client will still be injected with EAG Forge Revamped!</div>';
+        if (modsToDisplay.length === 0) {
+            modListContainer.innerHTML = '<div class="mod-placeholder">No addons configured for this client architecture.</div>';
             return;
         }
 
-        compatibleMods.forEach(mod => {
+        modsToDisplay.forEach(mod => {
             const card = document.createElement("div");
             card.className = "mod-card";
 
@@ -152,8 +172,26 @@ document.addEventListener("DOMContentLoaded", () => {
             info.className = "mod-card-info";
             info.innerHTML = `<h4>${mod.name}</h4><p>${mod.description}</p>`;
 
+            const actions = document.createElement("div");
+            actions.style.display = "flex";
+            actions.style.alignItems = "center";
+            actions.style.gap = "12px";
+
+            // Direct Raw Download Link
+            const rawDownloadLink = document.createElement("a");
+            rawDownloadLink.href = mod.file;
+            rawDownloadLink.download = `${mod.id}.js`;
+            rawDownloadLink.className = "badge";
+            rawDownloadLink.style.textDecoration = "none";
+            rawDownloadLink.style.color = "#38bdf8";
+            rawDownloadLink.style.borderColor = "#0284c7";
+            rawDownloadLink.style.cursor = "pointer";
+            rawDownloadLink.textContent = "⬇ Raw .JS";
+
+            // Bundle Checkbox
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
+            checkbox.title = "Bundle into client download";
             checkbox.checked = !!mod.default;
             if (checkbox.checked) selectedModIds.add(mod.id);
 
@@ -165,13 +203,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
 
+            actions.appendChild(rawDownloadLink);
+            actions.appendChild(checkbox);
+
             card.appendChild(info);
-            card.appendChild(checkbox);
+            card.appendChild(actions);
             modListContainer.appendChild(card);
         });
     }
 
-    // 5. Injection & Download Action
+    // 5. Injection & Client Assembly
     injectBtn.addEventListener("click", async () => {
         if (!clientHTMLContent) return;
 
@@ -181,7 +222,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const bundledMods = [];
 
-        // Fetch selected mod codes
         for (const modId of selectedModIds) {
             const mod = availableMods.find(m => m.id === modId);
             if (mod && mod.file) {
@@ -199,10 +239,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         updateProgress(60, "Splicing EAG Forge Revamped harness...");
 
-        // Generate bootstrap snippet
         const bootstrapHTML = window.EAG_TEMPLATES.generateBootstrap(detectedVersion, bundledMods);
 
-        // Inject before </head>, </body>, or at the end
         let patchedHTML = "";
         if (clientHTMLContent.includes("</body>")) {
             patchedHTML = clientHTMLContent.replace("</body>", `${bootstrapHTML}\n</body>`);
@@ -214,7 +252,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         updateProgress(90, "Packaging client blob...");
 
-        // Trigger automatic download
         setTimeout(() => {
             const blob = new Blob([patchedHTML], { type: "text/html;charset=utf-8" });
             const downloadUrl = URL.createObjectURL(blob);
@@ -227,7 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
             document.body.removeChild(a);
             URL.revokeObjectURL(downloadUrl);
 
-            updateProgress(100, "Done! Downloading your modded client.");
+            updateProgress(100, "Done! Modded client downloaded.");
             injectBtn.disabled = false;
         }, 500);
     });
