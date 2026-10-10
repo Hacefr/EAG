@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EAG Forge Revamped | Client Injector & Modding Hub</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts for a clean Minecraft/modern UI look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1 class="logo">EAG FORGE <span>REVAMPED</span></h1>
+            <p class="subtitle">Next-Generation Browser Modloader & Injector for Eaglercraft</p>
+            <div class="version-badges">
+                <span class="badge">1.8.8</span>
+                <span class="badge">1.12.2</span>
+                <span class="badge">1.21.6</span>
+                <span class="badge">26.2 (WASM)</span>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="card">
+            
+            <!-- Step 1: Upload Client -->
+            <section class="step-section">
+                <h2>1. Upload Eaglercraft Client</h2>
+                <div class="dropzone" id="dropzone">
+                    <input type="file" id="clientFileInput" accept=".html,.htm" hidden>
+                    <div class="dropzone-content">
+                        <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                        </svg>
+                        <p id="dropzone-text"><strong>Click to browse</strong> or drag & drop your <code>.html</code> client here</p>
+                        <span class="file-size-hint">Works with offline builds, unminified JS & modern WASM bundles</span>
+                    </div>
+                </div>
+
+                <!-- Client Info Card (Hidden until uploaded) -->
+                <div id="clientStatus" class="client-status hidden">
+                    <span class="status-indicator"></span>
+                    <div class="status-details">
+                        <strong id="detectedClientName">No client loaded</strong>
+                        <small id="detectedVersionText">Detecting version architecture...</small>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Step 2: Select Pre-baked Mods -->
+            <section class="step-section">
+                <div class="section-header">
+                    <h2>2. Select Addons & Performance Mods</h2>
+                    <span class="subtext">Fetch live from official repository</span>
+                </div>
+
+                <div id="modListContainer" class="mod-list">
+                    <!-- Populated dynamically via manifest.json in Chunk 2 -->
+                    <div class="mod-placeholder">Upload a client above to preview compatible addons.</div>
+                </div>
+            </section>
+
+            <!-- Step 3: Inject Action -->
+            <section class="step-section action-section">
+                <button id="injectBtn" class="btn primary-btn" disabled>
+                    <span>⚡ Inject & Build EAG Forge</span>
+                </button>
+                <div id="progressContainer" class="progress-container hidden">
+                    <div class="progress-bar" id="progressBar"></div>
+                    <span id="progressText" class="progress-text">Preparing patch...</span>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer / Credits -->
+        <footer>
+            <p>EAG Forge Revamped is an open-source community recode based on the EaglerForge ModAPI.</p>
+            <p class="credits">
+                Credits to <strong>LAX1DUDE</strong>, original <strong>EaglerForge</strong> developers, 
+                <strong>o_xer</strong>, and <strong>eymenwsmc</strong>.
+            </p>
+            <div class="links">
+                <a href="https://github.com" target="_blank" id="githubRepoLink">GitHub Repository</a>
+                <span>•</span>
+                <a href="#" id="directDownloadLink">Download Pre-Built Client</a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts will hook in during Chunk 2 -->
+    <script src="injector/templates.js"></script>
+    <script src="injector/injector.js"></script>
+</body>
+</html>
