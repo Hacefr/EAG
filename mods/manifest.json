@@ -2,7 +2,7 @@
   {
     "id": "eaglerium",
     "name": "Eaglerium (Lithium Math Port)",
-    "description": "Port of Lithium-style algorithms: Fast trigonometry lookup tables, GC pressure reduction, and tick stabilization.",
+    "description": "Port of Lithium-style algorithms: Fast trigonometry tables, vector memory caching, and physics optimization.",
     "version": "1.0.0",
     "author": "EAG Forge Revamped Team",
     "supportedVersions": ["1.8.8", "1.12.2", "1.21.6", "26.2 (WASM)", "Modern (WASM)"],
@@ -10,9 +10,39 @@
     "default": true
   },
   {
+    "id": "eagopt",
+    "name": "EAGOpt (Frame Pacer & Redundancy Filter)",
+    "description": "Partners with Eaglerium. Smooths frame pacing, eliminates duplicate WebGL texture flips, and reduces background lag.",
+    "version": "1.0.0",
+    "author": "EAG Forge Revamped Team",
+    "supportedVersions": ["1.8.8", "1.12.2", "1.21.6", "26.2 (WASM)", "Modern (WASM)"],
+    "file": "mods/eagopt/eagopt.js",
+    "default": true
+  },
+  {
+    "id": "eagzoom",
+    "name": "EAGZoom (OptiFine Camera Zoom)",
+    "description": "Press and hold 'C' in-game for a smooth cinematic camera zoom.",
+    "version": "1.0.0",
+    "author": "EAG Forge Revamped Team",
+    "supportedVersions": ["1.8.8", "1.12.2", "1.21.6", "26.2 (WASM)", "Modern (WASM)"],
+    "file": "mods/eagzoom/eagzoom.js",
+    "default": true
+  },
+  {
+    "id": "fullbright",
+    "name": "Fullbright (Night Vision Gamma)",
+    "description": "Press 'B' in-game to toggle full lighting brightness in dark caves and nighttime.",
+    "version": "1.0.0",
+    "author": "EAG Forge Revamped Team",
+    "supportedVersions": ["1.8.8", "1.12.2", "1.21.6", "26.2 (WASM)", "Modern (WASM)"],
+    "file": "mods/fullbright/fullbright.js",
+    "default": false
+  },
+  {
     "id": "workservers",
-    "name": "WorkServers (Unblocked Server Hub)",
-    "description": "Pre-populates multiplayer with active, verified community servers and auto-fetches working unblocked proxies.",
+    "name": "WorkServers (Unblocked Live Hub)",
+    "description": "Pre-populates the multiplayer list with active, unblocked servers and WebSocket proxies.",
     "version": "1.0.0",
     "author": "EAG Forge Revamped Team",
     "supportedVersions": ["1.8.8", "1.12.2", "1.21.6", "26.2 (WASM)", "Modern (WASM)"],
