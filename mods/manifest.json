@@ -1,0 +1,22 @@
+[
+  {
+    "id": "eaglerium",
+    "name": "Eaglerium (Lithium Math Port)",
+    "description": "Port of Lithium-style algorithms: Fast trigonometry lookup tables, GC pressure reduction, and tick stabilization.",
+    "version": "1.0.0",
+    "author": "EAG Forge Revamped Team",
+    "supportedVersions": ["1.8.8", "1.12.2", "1.21.6", "26.2 (WASM)", "Modern (WASM)"],
+    "file": "mods/eaglerium/eaglerium.js",
+    "default": true
+  },
+  {
+    "id": "workservers",
+    "name": "WorkServers (Unblocked Server Hub)",
+    "description": "Pre-populates multiplayer with active, verified community servers and auto-fetches working unblocked proxies.",
+    "version": "1.0.0",
+    "author": "EAG Forge Revamped Team",
+    "supportedVersions": ["1.8.8", "1.12.2", "1.21.6", "26.2 (WASM)", "Modern (WASM)"],
+    "file": "mods/workservers/workservers.js",
+    "default": true
+  }
+]
